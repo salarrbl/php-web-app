@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include './config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $conn->real_escape_string($_POST['name']);
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		echo "<p>Email already registered!</p>";
 		header("Location: index.php");
     } else {
-        $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')";
+        $sql = "INSERT INTO users (name, email, password_hash) VALUES ('$name', '$email', '$password')";
 
         if ($conn->query($sql) === TRUE) {
 			echo "Registration successful! <a href='login.php'>Login here</a>";
@@ -27,11 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="./templates/login.css">
 <head>
     <title>Sign-Up</title>
 </head>
 <body>
-    <h2>Sign-Up</h2>
+<div>
+<h2>Sign-Up</h2>
     <form method="POST" action="signup.php">
         <input type="text" name="name" placeholder="Name" required><br>
         <input type="email" name="email" placeholder="Email" required><br>
@@ -39,5 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <button type="submit">Sign-Up</button>
     </form>
     <a href="login.php">Already have an account? Login</a>
+
+</div>
 </body>
 </html>
