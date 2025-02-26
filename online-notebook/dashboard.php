@@ -23,6 +23,15 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result_completed = $stmt->get_result();
 $completed_notes = $result_completed->fetch_all(MYSQLI_ASSOC);
+
+# days 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	$day = $conn->real_escape_string($_GET['day']);
+	echo $day;
+
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +52,6 @@ $completed_notes = $result_completed->fetch_all(MYSQLI_ASSOC);
             <a class="btn btn-danger" href="logout.php">Logout</a>
         </div>
     </nav>
-
     <div class="container mt-4">
         <h2>📌 Pending Notes</h2>
         <?php if (empty($pending_notes)): ?>
@@ -89,7 +97,7 @@ $completed_notes = $result_completed->fetch_all(MYSQLI_ASSOC);
             </div>
         <?php endif; ?>
     </div>
-
+	<div></div>
 </body>
 </html>
 

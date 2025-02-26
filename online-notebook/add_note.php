@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $content = trim($_POST['content']);
 
     if (!empty($title) && !empty($content)) {
-        $stmt = $conn->prepare("INSERT INTO notes (user_id, title, content) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO notes (user_id, title, content, note_date) VALUES (?, ?, ?, CURDATE())");
         $stmt->execute([$user_id, $title, $content]);
         header("Location: notes.php");
         exit();
