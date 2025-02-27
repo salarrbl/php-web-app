@@ -1,4 +1,55 @@
+<?php
+include 'config/db.php';
+session_start();
+if (isset($_SESSION['login_true']) === true) {
+	try {
+        $sql = "select * from `users` where id = " . $_SESSION['user_id'];
+		/* echo $sql; */
+        $result = mysqli_query($conn, $sql);
+        $user_information = mysqli_fetch_assoc($result);
+		/* var_dump($user_information); */
+		/* die; */
+        /* print_r($user_informationow); */
+
+    } catch (mysqli_sql_exception $e) {
+        $message = $e->getMessage();
+	}
+	if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POST['email'])) {
+		    $user_id = $_POST['user_id'];
+			$email = mysqli_real_escape_string($conn ,$_POST['email']);
+			$name  = mysqli_real_escape_string($conn, $_POST['name']);
+            $sql_1 = "UPDATE `users` SET `name` = '$name', `email` = '$email' where `id` = " . intval($_SESSION['user_id']);
+			
+			try {
+				$result_1 = mysqli_query($conn, $sql_1);
+				echo "updated";
+			} catch (mysqli_sql_exception $e) {
+				$message = $e->getMessage();
+	            print($message);
+
+			}
+			exit;
+	}
+	if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["current-password"]) && isset($_POST['new-password'])) {
+		$current_pass = $_POST['current-password'];
+		$new_pass = password_hash($_POST['new-password'], PASSWORD_BCRYPT);
+		if(password_verify($_POST['current-password'], $user_information['password_hash'])) {
+            $sql_2 = "UPDATE `users` SET `password_hash` = '$new_pass' where `id` = " . intval($_SESSION['user_id']);
+			try {
+				$result_2 = mysqli_query($conn, $sql_2);
+				echo "Change the password";
+			} catch (mysqli_sql_exception $e) {
+				$message = $e->getMessage();
+				print($message);
+			}
+			exit;
+		}
+	}
+
+?>
+
 <!DOCTYPE html>
+
 <html lang="en">
 <link rel="stylesheet" href="templates/sytle.css">
 <head>
@@ -8,28 +59,17 @@
 </head>
 <body>
 	
-<?php
-include 'config/db.php';
-session_start();
-/* $user_nameA = $_SESSION['user_name']; */
-/* $sqll = "SELECT * FROM users WHERE username = '$user_nameA'"; */
-/* $result_a = mysqli_query($conn, $sqll); */
-/* $roww = mysqli_fetch_assoc($result_a); */
-/* echo ($roww); */
-/* print_r($roww); */
-if (isset($_SESSION['login_true']) === true) {
-?>
 <div>
    <!-- Sidebar -->
     <div class="sidebar">
         <h2>User Panel</h2>
         <ul>
             <li><a href="#dashboard">داشبورد</a></li>
-            <li><a href="#profile">ویرایش پروفایل</a></li>
+            <li><a href="#profile">Edit Profile</a></li>
             <li><a href="#posts">مقالات من</a></li>
             <li><a href="#comments">نظرات من</a></li>
             <li><a href="#security">امنیت</a></li>
-            <li><a href="#logout">خروج</a></li>
+            <li><a href="./logout.php">خروج</a></li>
         </ul>
     </div>
 
@@ -37,27 +77,39 @@ if (isset($_SESSION['login_true']) === true) {
     <div class="main-content">
         <!-- Dashboard -->
         <section id="dashboard" class="card">
+			<input type="file" id="imageUpload" accept="image/*"> -->
+			<form action="upload.php" method="POST" enctype="multipart/form-data">
+				Select image to upload:
+				<input type="file" name="image" required>
+				<input type="submit" value="Upload Image" name="submit">
+			</form>
             <h2>داشبورد</h2>
+			<img src="./statics/image/" alt="">
+			<?php if (!empty($uploadedFile)): ?>
+					<h3>Uploaded Image:</h3>
+					<img src="<?= htmlspecialchars($uploadedFile) ?>" alt="Uploaded Image" width="300">
+			<?php endif; ?>
 			<p>Welcome <strong><?php echo $_SESSION['user_name']?></strong>!</p>
             <p>تعداد مقالات منتشرشده: ۵</p>
         </section>
 
         <!-- Profile Edit -->
         <section id="profile" class="card">
-            <h2>ویرایش پروفایل</h2>
-            <form>
-                <label for="name">نام:</label>
-                <input type="text" id="name" name="name" value="نام کاربر">
-                <label for="email">ایمیل:</label>
-                <input type="email" id="email" name="email" value="user@example.com">
-                <button type="submit" class="btn">ذخیره تغییرات</button>
+            <h2>Edit Profile</h2>
+            <form method="POST" action="user_panel.php">
+				<input type="hidden" name="user_id" value="<?=$user_information['user_id'];?>"> <!-- Replace with the actual user_id -->
+                <label for="name">Name:</label>
+				<input type="text" id="name" name="name" value="<?=$user_information['name'];?>">
+                <label for="email">Email:</label>
+				<input type="email" id="email" name="email" value="<?=$user_information['email'];?>">
+                <button type="submit" class="btn">Save Changes</button>
             </form>
         </section>
 
         <!-- Change Password -->
         <section id="security" class="card">
             <h2>تغییر رمز عبور</h2>
-            <form>
+            <form action="user_panel.php" method="POST" >
                 <label for="current-password">رمز عبور فعلی:</label>
                 <input type="password" id="current-password" name="current-password" required>
                 <label for="new-password">رمز عبور جدید:</label>
@@ -129,14 +181,11 @@ if (isset($_SESSION['login_true']) === true) {
 <?php } else { ?>
 <p>Redirecting you to login page...</p>
 <script>
-    // Delay the redirection for 3 seconds (adjust as needed)
     setTimeout(function () {
-        // Specify the URL you want to redirect to
         window.location.href = '/login.php';
 
-        // Display a message (optional)
         document.body.innerHTML = '<p>You are now being redirected to the new page.</p>';
-    }, 3000); // 3000 milliseconds (3 seconds)
+    }, 1000); 
 </script>
 <?php } ?>
 </body>
