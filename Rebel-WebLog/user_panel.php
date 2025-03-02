@@ -4,12 +4,8 @@ session_start();
 if (isset($_SESSION['login_true']) === true) {
 	try {
         $sql = "select * from `users` where id = " . $_SESSION['user_id'];
-		/* echo $sql; */
         $result = mysqli_query($conn, $sql);
         $user_information = mysqli_fetch_assoc($result);
-		/* var_dump($user_information); */
-		/* die; */
-        /* print_r($user_informationow); */
 
     } catch (mysqli_sql_exception $e) {
         $message = $e->getMessage();
@@ -22,7 +18,7 @@ if (isset($_SESSION['login_true']) === true) {
 			
 			try {
 				$result_1 = mysqli_query($conn, $sql_1);
-				echo "updated";
+				header("Location: user_panel.php");
 			} catch (mysqli_sql_exception $e) {
 				$message = $e->getMessage();
 	            print($message);
@@ -37,7 +33,8 @@ if (isset($_SESSION['login_true']) === true) {
             $sql_2 = "UPDATE `users` SET `password_hash` = '$new_pass' where `id` = " . intval($_SESSION['user_id']);
 			try {
 				$result_2 = mysqli_query($conn, $sql_2);
-				echo "Change the password";
+				/* echo "Change the password"; */
+				header("Location: user_panel.php");
 			} catch (mysqli_sql_exception $e) {
 				$message = $e->getMessage();
 				print($message);
@@ -64,26 +61,20 @@ if (isset($_SESSION['login_true']) === true) {
     <div class="sidebar">
         <h2>User Panel</h2>
         <ul>
-            <li><a href="#dashboard">داشبورد</a></li>
+            <li><a href="#dashboard">Dashboard</a></li>
             <li><a href="#profile">Edit Profile</a></li>
-            <li><a href="#posts">مقالات من</a></li>
-            <li><a href="#comments">نظرات من</a></li>
-            <li><a href="#security">امنیت</a></li>
-            <li><a href="./logout.php">خروج</a></li>
+			<li><a href="#posts">my articles</a></li>
+			<li><a href="write_post.php">New post</a></li>
+            <li><a href="#comments">my Comments</a></li>
+            <li><a href="#security">security</a></li>
+            <li><a href="./logout.php">logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Dashboard -->
-        <section id="dashboard" class="card">
-			<input type="file" id="imageUpload" accept="image/*"> -->
-			<form action="upload.php" method="POST" enctype="multipart/form-data">
-				Select image to upload:
-				<input type="file" name="image" required>
-				<input type="submit" value="Upload Image" name="submit">
-			</form>
-            <h2>داشبورد</h2>
+           <h2>داشبورد</h2>
 			<img src="./statics/image/" alt="">
 			<?php if (!empty($uploadedFile)): ?>
 					<h3>Uploaded Image:</h3>
