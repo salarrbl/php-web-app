@@ -83,11 +83,6 @@ if (isset($_SESSION['login_true']) === true) {
     <div class="main-content">
         <!-- Dashboard -->
            <h2>داشبورد</h2>
-			<img src="./statics/image/" alt="">
-			<?php if (!empty($uploadedFile)): ?>
-					<h3>Uploaded Image:</h3>
-					<img src="<?= htmlspecialchars($uploadedFile) ?>" alt="Uploaded Image" width="300">
-			<?php endif; ?>
 			<p>Welcome <strong><?php echo $_SESSION['user_name']?></strong>!</p>
             <p>تعداد مقالات منتشرشده: ۵</p>
         </section>
@@ -104,7 +99,7 @@ if (isset($_SESSION['login_true']) === true) {
                 <button type="submit" class="btn">Save Changes</button>
             </form>
         </section>
-
+		<section></section>
         <!-- Change Password -->
         <section id="security" class="card">
             <h2>تغییر رمز عبور</h2>
