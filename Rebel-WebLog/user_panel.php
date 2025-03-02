@@ -10,6 +10,14 @@ if (isset($_SESSION['login_true']) === true) {
     } catch (mysqli_sql_exception $e) {
         $message = $e->getMessage();
 	}
+	$author_id = intval($_SESSION['user_id']); // Get logged-in user ID
+
+	$sql_q = "SELECT * FROM posts WHERE author_id = $author_id ORDER BY created_at DESC";
+	$result_q = mysqli_query($conn, $sql_q);
+	/* echo $sql_q; */
+	/* var_dump($result_q); */
+
+
 	if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POST['email'])) {
 		    $user_id = $_POST['user_id'];
 			$email = mysqli_real_escape_string($conn ,$_POST['email']);
@@ -111,32 +119,31 @@ if (isset($_SESSION['login_true']) === true) {
 
         <!-- User Posts -->
         <section id="posts" class="card">
-            <h2>مقالات من</h2>
+            <h2>My Article</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>عنوان</th>
-                        <th>وضعیت</th>
-                        <th>تاریخ انتشار</th>
-                        <th>عملیات</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>مقاله اول</td>
-                        <td>منتشر شده</td>
-                        <td>۱۴۰۲/۰۱/۰۱</td>
-                        <td><a href="#">ویرایش</a> | <a href="#">حذف</a></td>
-                    </tr>
-                    <tr>
-                        <td>مقاله دوم</td>
-                        <td>پیش‌نویس</td>
-                        <td>-</td>
-                        <td><a href="#">ویرایش</a> | <a href="#">حذف</a></td>
-                    </tr>
-                </tbody>
+				<tbody>
+<?php
+    if (mysqli_num_rows($result_q) > 0) {
+        while ($row = mysqli_fetch_assoc($result_q)) {
+			echo "<tr>";
+			echo "<td>{$row['title']}</td>";
+			echo "<td>{$row['created_at']}</td>";
+			echo  "<td><a href='./edit_note.php?id{$row['id']}'>Edit</a>" .  '|' . "<a href='./note_del.php?id={$row['id']}'>Delete</a></td>";
+			echo "</tr>";
+
+		}
+	}
+?>
+            </tbody>
             </table>
-            <button class="btn">ایجاد مقاله جدید</button>
+            <button  class="btn">New Post<a href="./write_post.php">New POST</a></button>
         </section>
 
         <!-- User Comments -->
@@ -156,12 +163,6 @@ if (isset($_SESSION['login_true']) === true) {
                         <td>مقاله اول</td>
                         <td>این یک نظر تستی است.</td>
                         <td>تأیید شده</td>
-                        <td><a href="#">ویرایش</a> | <a href="#">حذف</a></td>
-                    </tr>
-                    <tr>
-                        <td>مقاله دوم</td>
-                        <td>این نظر در انتظار تأیید است.</td>
-                        <td>در انتظار تأیید</td>
                         <td><a href="#">ویرایش</a> | <a href="#">حذف</a></td>
                     </tr>
                 </tbody>

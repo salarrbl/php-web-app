@@ -18,8 +18,8 @@ $result = mysqli_query($conn, $sql);
 </head>
 <body>
     <h2>All Posts</h2>
-    <a href="write_post.php">➕ Write New Post</a> | <a href="my_posts.php">👤 My Posts</a>
-    <hr>
+    <a href="write_post.php">➕ Write New Post</a> | <a href="my_posts.php">👤 My Posts</a> | <a href="user_panel.php">Dashboard</a>
+   <hr>
 
     <?php
     if (mysqli_num_rows($result) > 0) {

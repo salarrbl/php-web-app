@@ -18,3 +18,4 @@ if (isset($_SESSION['login_true']) === true) {
 			exit;
 	}
 
+?>
