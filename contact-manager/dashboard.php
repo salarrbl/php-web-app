@@ -1,5 +1,11 @@
 <?php
 include 'db.php';
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+$user_id = $_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +22,7 @@ include 'db.php';
     </style>
 </head>
 <body>
-    <h1>Contact Manager</h1>
+    <h1>Contact Manager | <a href="logout.php">Logout</a></h1>   
     
     <form method="post" action="save.php">
         <input type="text" name="name" placeholder="Name" required>
@@ -41,15 +47,40 @@ include 'db.php';
         </thead>
         <tbody id="contact-list">
             <?php
-            $sql = "SELECT * FROM contacts 
+			/* echo $user_id; */
+$sql = "SELECT * FROM contacts WHERE user_id=$user_id";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . $row['name'] . "</td>";
+                    echo "<td>" . $row['number'] . "</td>";
+                    echo "<td>" . $row['email'] . "</td>";
+                    echo "<td>" . $row['country'] . "</td>";
+					echo "<td>" . $row['more_info'] . "</td>";
+					echo "<td>
+						<a href='view.php?id=" . $row['id'] . "'>View</a> |
+						<a href='edit.php?id=" . $row['id'] . "'>Edit</a> |
+						<a href='delete.php?id=" . $row['id'] . "'>Delete</a>
+                    </td>";
+				echo "</tr>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='5'>No contacts found.</td></tr>";
+            }
+?>
+	<?php 
+	$sql1 = "SELECT * FROM contacts 
         WHERE name LIKE '%$search%' 
         OR number LIKE '%$search%' 
         OR email LIKE '%$search%' 
         OR country LIKE '%$search%' 
         OR more_info LIKE '%$search%'";
-            $result = $conn->query($sql);
+			$resul1t = $conn->query($sql1);
 
-            if ($result->num_rows > 0) {
+			if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td>" . $row['name'] . "</td>";
@@ -62,7 +93,8 @@ include 'db.php';
             } else {
                 echo "<tr><td colspan='5'>No contacts found.</td></tr>";
             }
-            ?>
+
+?>
         </tbody>
     </table>
 
